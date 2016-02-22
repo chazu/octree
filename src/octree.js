@@ -67,4 +67,35 @@ class Octree {
       this.children[octantContainingPoint(point)].insert(point);
     }
   }
+
+  getPointsInsideBox(bmin, bmax) {
+    return _.flatten(this._getPointsInsideBox(bmin, bmax));
+  }
+
+  _getPointsInsideBox(bmin, bmax) {
+    let res = [];
+    if (isLeafNode()) {
+      if (!this.point === null) {
+        if (!((this.point.x > bmax.x || this.point.y > bmax.y || this.point.z > bmax.z) ||
+              (this.point.x < bmin.x || this.point.y < bmin.y || this.point.z < bmin.z))) { // Point is inside bounding box
+          res.push(this.point);
+        }
+      }
+    } else {
+      this.children.forEach((childOctant) => {
+        if (childOctant.intersectsQueryRectangle(bmin, bmax)) {
+          res.push(childOctant._getPointsInsideBox(bmin, bmax));
+        }
+      });
+    }
+    return res;
+  }
+
+  intersectsQueryRectangle(bmin, bmax) {
+    let thisMinVector = this.origin - this.halfDimension;
+    let thisMaxVector = this.origin + this.halfDimension;
+    
+    return !(thisMaxVector.x < bmin.x || thisMaxVector.y < bmin.y || thisMaxVector.z < bmin.z) ||
+      !(thisMinVector.x > bmax.x || thisMinVector.y > bmax.y || thisMinVector.z > bmax.z);
+  }
 }
