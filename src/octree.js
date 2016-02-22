@@ -1,11 +1,13 @@
 "use strict";
 let vektor = require('vektor');
-let Vec3 = vektor.Vector;
+let Vec3 = vektor.vector;
 
 class Octree {
   constructor(options) {
     this.origin = options.center;
-    this.halfDimension = options.halfDimension;
+    this.halfDimension = new Vec3(options.halfDimension,
+                                  options.halfDimension,
+                                  options.halfDimension);
 
     this.children = new Array(8);
     this.point = null;
@@ -99,3 +101,5 @@ class Octree {
       !(thisMinVector.x > bmax.x || thisMinVector.y > bmax.y || thisMinVector.z > bmax.z);
   }
 }
+
+module.exports = Octree;
