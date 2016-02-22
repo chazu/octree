@@ -1,23 +1,42 @@
 "use strict";
+let _      = require('lodash');
 let vektor = require('vektor');
-let Vec3 = vektor.vector;
+let Vec3   = vektor.vector;
 
+let valueMap = {
+  x: [0, 0, 0, 0, 1, 1, 1, 1],
+  y: [0, 0, 1, 1, 0, 0, 1, 1],
+  z: [0, 1, 0, 1, 0, 1, 0, 1]
+  
+}
 class Octree {
   constructor(options) {
     this.origin = options.center;
-    this.halfDimension = new Vec3(options.halfDimension,
-                                  options.halfDimension,
-                                  options.halfDimension);
+    this.halfDimension =  this.initializeHalfDimension(options);
 
     this.children = new Array(8);
     this.point = null;
   }
 
+  initializeHalfDimension(options) {
+    if (options.halfDimension) {
+      if (typeof options.halfDimension === 'number') {
+        return new Vec3(options.halfDimension,
+                        options.halfDimension,
+                        options.halfDimension);
+      } else {
+        return options.halfDimension; // Its already a Vec3
+      }
+    } else {
+      return new Vec3(0, 0, 0);
+    };
+  }
+
   octantContainingPoint(point) {
     var oct = 0;
-    if(point.x >= this.origin.x) oct | 4;
-    if(point.y >= this.origin.y) oct | 2;
-    if(point.z >= this.origin.z) oct | 1;
+    if(point.x >= this.origin.x) oct = oct | 4;
+    if(point.y >= this.origin.y) oct = oct | 2;
+    if(point.z >= this.origin.z) oct = oct | 1;
 
     return oct;
   }
@@ -27,46 +46,63 @@ class Octree {
       this.children[0] === null;
   }
 
+  octreeAtIndexShouldBePositive(dimension, index) {
+    return !(valueMap[dimension][index]);
+  }
+
+  initializeChildren() {
+    var t = this;
+    _.times(8, (i) => {
+      let newOrigin = new Vec3({
+        x: 0,
+        y: 0,
+        z: 0
+      });
+
+      newOrigin.x = t.origin.x + t.halfDimension.x * (this.octreeAtIndexShouldBePositive('x', i) ? 0.5 : -0.5);
+      newOrigin.y = t.origin.y + t.halfDimension.y * (this.octreeAtIndexShouldBePositive('y', i) ? 0.5 : -0.5);
+      newOrigin.z = t.origin.z + t.halfDimension.z * (this.octreeAtIndexShouldBePositive('z', i) ? 0.5 : -0.5);
+
+      t.children[i] = new Octree({
+        center: newOrigin,
+        halfDimension: t.halfDimension.x * 0.5
+      });
+    });
+  }
+  
   insert(point) {
+    console.log("What the fuck", this);
+    var t = this;
+    console.log("inserting point:", point);
+    
     if (this.isLeafNode()) {
+      console.log("is leaf node true");
       if (this.point === null) {
+        console.log("no point in octant");
         // Octant has no point data or has less point data than
         // we've established as a threshold for splitting -
         // just set the point data
-      this.point = point;
+        this.point = point;
+        return;
       } else { // END octant has no point data
+        console.log("octant has point data");
+
         // We need to split this octant
-        let oldPoint = this.point;
-        this.point = null;
-
-        _.times(8, (i) => {
-          let newOrigin = new Vec3({
-            x: this.origin.x,
-            y: this.origin.y,
-            z: this.origin.z
-          });
-
-          newOrigin.x += this.halfDimension.x * (i&4 ? 0.5 : -0.5);
-          newOrigin.y += this.halfDimension.y * (i&2 ? 0.5 : -0.5);
-          newOrigin.z += this.halfDimension.z * (i&1 ? 0.5 : -0.5);
-
-          this.children[i] = new Octree({
-            center: newOrigin,
-            halfDimension: this.halfDimension * 0.5
-          });
-        });
+        this.initializeChildren();
 
         // Put the old point data into its new home
-        let numberOfOctantForOldPoint = this.octantContainingPoint(oldPoint);
-        this.children[numberOfOctantForOldPoint].insert(oldPoint);
+        let numberOfOctantForOldPoint = this.octantContainingPoint(this.point);
+        this.children[numberOfOctantForOldPoint].insert(this.point);
+        this.point = null;
 
         // Insert the point we orignally came here to insert
         let numberOfOctantForNewPoint = this.octantContainingPoint(point);
         this.children[numberOfOctantForNewPoint].insert(point);
-      }
+      } // END split octant with existing point data
     } else {  // END is leaf node is true
+      console.log("in interior node - recursing...");
       // This isn't a leaf node - recurse into the appropriate leaf node
-      this.children[octantContainingPoint(point)].insert(point);
+      this.children[this.octantContainingPoint(point)].insert(point);
     }
   }
 
@@ -76,7 +112,7 @@ class Octree {
 
   _getPointsInsideBox(bmin, bmax) {
     let res = [];
-    if (isLeafNode()) {
+    if (this.isLeafNode()) {
       if (!this.point === null) {
         if (!((this.point.x > bmax.x || this.point.y > bmax.y || this.point.z > bmax.z) ||
               (this.point.x < bmin.x || this.point.y < bmin.y || this.point.z < bmin.z))) { // Point is inside bounding box
