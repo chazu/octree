@@ -23,8 +23,8 @@ describe('Octree', function() {
     it('should give 2 for -, +, -', function() {
       assert.equal(subject.octantContainingPoint(new Vec3(-1, 1, -1)), 2);
     });
-
-});
+  });
+  
   describe('octreeAtIndexShouldBePositive', function() {
     var subject = new Octree({
         center: new Vec3(0, 0, 0),
@@ -38,8 +38,8 @@ describe('Octree', function() {
     it('should be false for 4', function() {
       assert(subject.octreeAtIndexShouldBePositive('x', 0));
     });
-    
   });
+
   describe('Initialization', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
@@ -111,12 +111,13 @@ describe('Octree', function() {
       assert.equal(subject.point.x, 10);
     });
 
-    // it('should be able to add a second point', function() {
-    //   var secondPoint = new Vec3(-10, -10, -10);
-    //   subject.insert(secondPoint);
+    it('should be able to add a second point', function() {
+      var secondPoint = new Vec3(-10, -10, -10);
+      subject.insert(secondPoint);
 
-    //   assert.equal(subject.getPointsInsideBox(new Vec3(0, 0, 0),
-    //                                     new Vec3(-15, -15, -15)).length, 2);
-    // })
+      assert.equal(subject.point, null);
+      assert.equal(subject.children[0].point.x, -10);
+      assert.equal(subject.children[7].point.x, 10);
+    })
   })
 });
