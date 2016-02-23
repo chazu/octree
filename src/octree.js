@@ -3,6 +3,7 @@ let _      = require('lodash');
 let vektor = require('vektor');
 let Vec3   = vektor.vector;
 
+let OctreePoint = require('./octreePoint')
 let valueMap = {
   x: [0, 0, 0, 0, 1, 1, 1, 1],
   y: [0, 0, 1, 1, 0, 0, 1, 1],
@@ -16,6 +17,47 @@ class Octree {
 
     this.children = new Array(8);
     this.point = null;
+  }
+
+  get maxX() { return this.origin.x + this.halfDimension.x; }
+  get maxy() { return this.origin.y + this.halfDimension.y; }
+  get maxZ() { return this.origin.z + this.halfDimension.z; }  
+
+  get minX() { return this.origin.x - this.halfDimension.x; }
+  get miny() { return this.origin.y - this.halfDimension.y; }
+  get minZ() { return this.origin.z - this.halfDimension.z; }
+
+  intersectsSphereForDimension(dim, point) {}
+
+  intersectsSphere(point) {
+    var dx, dy, dz = 0;
+    if (point.x < this.minX) {
+      dx = Math.abs(point.x - minX);
+    } else {
+      dx = Math.abs(point.x - maxX);
+    }
+
+    if (point.y < this.minY) {
+      dy = Math.abs(point.y - minY);
+    } else {
+      dy = Math.abs(point.y - maxY);
+    }
+
+    if (point.z < this.minZ) {
+      dz = Math.abs(point.z - minZ);
+    } else {
+      dz = Math.abs(point.z - maxZ);
+    }
+    return (dx <= point.radius ||
+            dy <= point.radius ||
+            dz <= point.radius);
+  }
+
+  collectPoints() {
+    // TODO
+  }
+
+  pointsWithinRadiusOfPoint(point) {
   }
 
   initializeHalfDimension(options) {
@@ -79,6 +121,21 @@ class Octree {
     this.insert(point);
   }
 
+  setPoint(point) {
+    if (!point instanceof OctreePoint) {
+      throw new Error("Octree can only contain OctreePoint instances!");
+    }
+    this.point = point;
+  }
+
+  dimensionsOfChildOctants() {
+    return new Vec3(
+      this.halfDimension,
+      this.halfDimension,
+      this.halfDimension
+    );
+  }
+
   insert(point) {
     var t = this;
 
@@ -87,7 +144,7 @@ class Octree {
         // Octant has no point data or has less point data than
         // we've established as a threshold for splitting -
         // just set the point data
-        this.point = point;
+        this.setPoint(point);
         return;
       } else { // END octant has no point data
         // We need to split this octant
@@ -108,9 +165,20 @@ class Octree {
     }
   }
 
+  delete(point) {
+    if (this.isLeafNode()) {
+      if (this.setPoint(point)) {
+        this.point = null;
+        return true;
+      }
+      return false;
+    } else {
+      return this.children[this.octantContainingPoint(point)].delete(point);
+    }
+  }
+
   getPoint(point) {
     if (this.isLeafNode()) {
-      console.log("is leaf node");
       if (this.point &&
           point.x === this.point.x &&
           point.y === this.point.y &&

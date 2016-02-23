@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bitwise": "^0.2.0",
+    "lodash": "^4.5.1",
     "vektor": "^0.3.0"
   }
 }
