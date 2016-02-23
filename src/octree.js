@@ -69,24 +69,27 @@ class Octree {
       });
     });
   }
-  
+
+  safeInsert(point) {
+    if (this.getPoint(point)) {
+      // TODO probably want to throw here
+      return false;
+    }
+
+    this.insert(point);
+  }
+
   insert(point) {
-    console.log("What the fuck", this);
     var t = this;
-    console.log("inserting point:", point);
-    
+
     if (this.isLeafNode()) {
-      console.log("is leaf node true");
       if (this.point === null) {
-        console.log("no point in octant");
         // Octant has no point data or has less point data than
         // we've established as a threshold for splitting -
         // just set the point data
         this.point = point;
         return;
       } else { // END octant has no point data
-        console.log("octant has point data");
-
         // We need to split this octant
         this.initializeChildren();
 
@@ -100,9 +103,24 @@ class Octree {
         this.children[numberOfOctantForNewPoint].insert(point);
       } // END split octant with existing point data
     } else {  // END is leaf node is true
-      console.log("in interior node - recursing...");
       // This isn't a leaf node - recurse into the appropriate leaf node
       this.children[this.octantContainingPoint(point)].insert(point);
+    }
+  }
+
+  getPoint(point) {
+    if (this.isLeafNode()) {
+      console.log("is leaf node");
+      if (this.point &&
+          point.x === this.point.x &&
+          point.y === this.point.y &&
+          point.z === this.point.z) {
+        return this.point;
+      } else {
+        return false;
+      }
+    } else {
+      return this.children[this.octantContainingPoint(point)].getPoint(point);
     }
   }
 
@@ -113,7 +131,7 @@ class Octree {
   _getPointsInsideBox(bmin, bmax) {
     let res = [];
     if (this.isLeafNode()) {
-      if (!this.point === null) {
+      if (!(this.point === null)) {
         if (!((this.point.x > bmax.x || this.point.y > bmax.y || this.point.z > bmax.z) ||
               (this.point.x < bmin.x || this.point.y < bmin.y || this.point.z < bmin.z))) { // Point is inside bounding box
           res.push(this.point);

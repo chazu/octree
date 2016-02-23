@@ -13,7 +13,7 @@ describe('Octree', function() {
 
     it('should give 0 for -, -, -', function() {
       assert.equal(subject.octantContainingPoint(new Vec3(-1, -1, -1)), 0);
-      
+
     });
 
     it('should give 1 for -, -, +', function() {
@@ -24,7 +24,7 @@ describe('Octree', function() {
       assert.equal(subject.octantContainingPoint(new Vec3(-1, 1, -1)), 2);
     });
   });
-  
+
   describe('octreeAtIndexShouldBePositive', function() {
     var subject = new Octree({
         center: new Vec3(0, 0, 0),
@@ -53,7 +53,7 @@ describe('Octree', function() {
       assert.equal(subject.origin.x, 0);
       assert.equal(subject.origin.y, 0);
       assert.equal(subject.origin.z, 0);
-      
+
     });
     it('should have no children', function() {
       assert.equal(subject.children.length, 8);
@@ -99,7 +99,7 @@ describe('Octree', function() {
 
   });
 
-  describe('adding a point', function() {
+  describe('insert', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
         halfDimension: 100
@@ -108,6 +108,7 @@ describe('Octree', function() {
       var testPoint = new Vec3(10, 10, 10);
       subject.insert(testPoint);
 
+      assert(!(subject.point === null));
       assert.equal(subject.point.x, 10);
     });
 
@@ -118,6 +119,51 @@ describe('Octree', function() {
       assert.equal(subject.point, null);
       assert.equal(subject.children[0].point.x, -10);
       assert.equal(subject.children[7].point.x, 10);
-    })
-  })
+    });
+
+    it('should blow up on insertion of a point which already exists', function() {
+      var duplicatePoint = new Vec3(-10, -10, -10);
+      assert.throws(() => subject.insert(duplicatePoint), Error);
+    });
+  });
+
+  describe('safeInsert', function() {
+    // TODO
+  });
+
+  describe('getPoint', function() {
+    it('should get a point if it exists', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+      var testPoint = new Vec3(10, 10, 10);
+      subject.insert(testPoint);
+
+      assert(subject.point.x === 10);
+      assert(subject.getPoint(testPoint));
+      assert(subject.getPoint(testPoint).x === 10);
+    });
+
+  });
+  describe('getPointsInsideBox', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+    var testPoint = new Vec3(10, 10, 10);
+    var secondPoint = new Vec3(-10, -10, -10);
+    it('should get a point from an octree with one point', function() {
+      subject.insert(testPoint);
+      assert.equal(subject.getPointsInsideBox(new Vec3(-10, -10, -10),
+                                              new Vec3(10, 10, 10)).length, 1);
+
+    });
+
+    it('should get two points from an octree with two points', function() {
+      subject.insert(secondPoint);
+      assert.equal(subject.getPointsInsideBox(new Vec3(-10, -10, -10),
+                                              new Vec3(10, 10, 10)).length, 2);
+    });
+  });
 });
