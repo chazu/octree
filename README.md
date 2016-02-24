@@ -1,7 +1,6 @@
 # TODO
 
 
-* Finish and test OctreePoint
 * Query for points in sphere [STARTED]
 * Query for points in conic frustrum
 * Nearest neighbor search
@@ -11,6 +10,7 @@
 
 # DONE
 * Add bounding sphere to OctantPoint (radius)
+* Finish and test OctreePoint
 
 from http://stackoverflow.com/questions/7067742/range-search-within-specified-radius-in-an-octree
 if (pX < minX of Cell)
