@@ -2,6 +2,7 @@ var assert = require('assert');
 
 var Octree = require('./../src/octree');
 var Vec3 = require('vektor').vector;
+var OctreePoint = require('./../src/octreePoint');
 
 describe('Octree', function() {
 
@@ -165,5 +166,40 @@ describe('Octree', function() {
       assert.equal(subject.getPointsInsideBox(new Vec3(-10, -10, -10),
                                               new Vec3(10, 10, 10)).length, 2);
     });
+  });
+
+  describe('intersectsSphereInDimension', function() {
+    it('intersects top level', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+
+      var point = new OctreePoint(new Vec3(0, 0, 0), 50);
+      assert.equal(subject.minX,-100);
+      assert.equal(subject.maxX, 100);
+
+      assert.equal(point.minX, -50);
+      assert.equal(point.maxX, 50);
+
+      assert(subject.intersectsSphereInDimension(point, "x"));
+    });
+
+    it('does not intersect top level', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+
+      var point = new OctreePoint(new Vec3(-500, -500, -500), 100);
+      assert.equal(subject.minX,-100);
+      assert.equal(subject.maxX, 100);
+
+      assert.equal(point.minX, -600);
+      assert.equal(point.maxX, -400);
+
+      assert.equal(subject.intersectsSphereInDimension(point, "x"), false);
+      assert.equal(subject.intersectsSphere(point), false);
+    });    
   });
 });

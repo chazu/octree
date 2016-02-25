@@ -1,4 +1,6 @@
 "use strict";
+var c = console.log;
+
 let _      = require('lodash');
 let vektor = require('vektor');
 let Vec3   = vektor.vector;
@@ -20,37 +22,39 @@ class Octree {
   }
 
   get maxX() { return this.origin.x + this.halfDimension.x; }
-  get maxy() { return this.origin.y + this.halfDimension.y; }
+  get maxY() { return this.origin.y + this.halfDimension.y; }
   get maxZ() { return this.origin.z + this.halfDimension.z; }  
 
   get minX() { return this.origin.x - this.halfDimension.x; }
-  get miny() { return this.origin.y - this.halfDimension.y; }
+  get minY() { return this.origin.y - this.halfDimension.y; }
   get minZ() { return this.origin.z - this.halfDimension.z; }
 
-  intersectsSphereForDimension(dim, point) {}
+  intersectsSphereInDimension(point, dimension) {
+    var d;
+     var upcasedDim = dimension.toUpperCase();
+    var pointDimMin = point["min" + upcasedDim];
+    var pointDimMax = point["max" + upcasedDim];
+
+    var octantDimMin = this["min" + upcasedDim];
+    var octantDimMax = this["max" + upcasedDim];
+
+    c("point dim min", pointDimMin);
+    c("point dim max", pointDimMax);
+    c("===");
+    c("oct dim min", octantDimMin);
+    c("oct dim max",octantDimMax);
+    
+    
+    return (octantDimMin < pointDimMin && octantDimMax > pointDimMax) ||
+      (octantDimMax > pointDimMin && octantDimMin < pointDimMin)  ||
+      (octantDimMin < pointDimMax && pointDimMax > octantDimMax);
+
+  }
 
   intersectsSphere(point) {
-    var dx, dy, dz = 0;
-    if (point.x < this.minX) {
-      dx = Math.abs(point.x - minX);
-    } else {
-      dx = Math.abs(point.x - maxX);
-    }
-
-    if (point.y < this.minY) {
-      dy = Math.abs(point.y - minY);
-    } else {
-      dy = Math.abs(point.y - maxY);
-    }
-
-    if (point.z < this.minZ) {
-      dz = Math.abs(point.z - minZ);
-    } else {
-      dz = Math.abs(point.z - maxZ);
-    }
-    return (dx <= point.radius ||
-            dy <= point.radius ||
-            dz <= point.radius);
+    return this.intersectsSphereInDimension(point, "x") &&
+      this.intersectsSphereInDimension(point, "y") &&
+      this.intersectsSphereInDimension(point, "z");
   }
 
   collectPoints() {

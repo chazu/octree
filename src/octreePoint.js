@@ -12,6 +12,14 @@ class OctreePoint {
   get y() { return this.vector.y; }
   get z() { return this.vector.z; }
 
+  get maxX() { return this.vector.x + this._radius; };
+  get maxY() { return this.vector.y + this._radius; };
+  get maxZ() { return this.vector.z + this._radius; };
+
+  get minX() { return this.vector.x - this._radius; };
+  get minY() { return this.vector.y - this._radius; };
+  get minZ() { return this.vector.z - this._radius; };
+  
   get position() {
     return this.locationVector;
   }
