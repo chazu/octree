@@ -1,6 +1,6 @@
 "use strict";
-var c = console.log;
-
+//var c = console.log;
+var c = function() {};
 let _      = require('lodash');
 let vektor = require('vektor');
 let Vec3   = vektor.vector;
@@ -37,7 +37,8 @@ class Octree {
 
     var octantDimMin = this["min" + upcasedDim];
     var octantDimMax = this["max" + upcasedDim];
-
+    c("<<<>>>");
+    c("For dim", dimension);
     c("point dim min", pointDimMin);
     c("point dim max", pointDimMax);
     c("===");
@@ -45,10 +46,11 @@ class Octree {
     c("oct dim max",octantDimMax);
     
     
-    return (octantDimMin < pointDimMin && octantDimMax > pointDimMax) ||
+    var match = (pointDimMax > octantDimMin && pointDimMax <= octantDimMax) ||
       (octantDimMax > pointDimMin && octantDimMin < pointDimMin)  ||
       (octantDimMin < pointDimMax && pointDimMax > octantDimMax);
-
+    c("Match in Dim", dimension, ":", match);
+    return match;
   }
 
   intersectsSphere(point) {

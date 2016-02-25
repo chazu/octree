@@ -8,8 +8,8 @@ describe('Octree', function() {
 
   describe('octantContainingPoint', function() {
     var subject = new Octree({
-        center: new Vec3(0, 0, 0),
-        halfDimension: 100
+      center: new Vec3(0, 0, 0),
+      halfDimension: 100
     });
 
     it('should give 0 for -, -, -', function() {
@@ -28,8 +28,8 @@ describe('Octree', function() {
 
   describe('octreeAtIndexShouldBePositive', function() {
     var subject = new Octree({
-        center: new Vec3(0, 0, 0),
-        halfDimension: 100
+      center: new Vec3(0, 0, 0),
+      halfDimension: 100
     });
 
     it('should be true for 0', function() {
@@ -42,10 +42,10 @@ describe('Octree', function() {
   });
 
   describe('Initialization', function() {
-      var subject = new Octree({
-        center: new Vec3(0, 0, 0),
-        halfDimension: 100
-      });
+    var subject = new Octree({
+      center: new Vec3(0, 0, 0),
+      halfDimension: 100
+    });
     it('should instantiate properly', function() {
       assert(subject instanceof Octree);
     });
@@ -101,10 +101,10 @@ describe('Octree', function() {
   });
 
   describe('insert', function() {
-      var subject = new Octree({
-        center: new Vec3(0, 0, 0),
-        halfDimension: 100
-      });
+    var subject = new Octree({
+      center: new Vec3(0, 0, 0),
+      halfDimension: 100
+    });
     it('should be able to add and retrieve a point', function() {
       var testPoint = new Vec3(10, 10, 10);
       subject.insert(testPoint);
@@ -148,10 +148,10 @@ describe('Octree', function() {
 
   });
   describe('getPointsInsideBox', function() {
-      var subject = new Octree({
-        center: new Vec3(0, 0, 0),
-        halfDimension: 100
-      });
+    var subject = new Octree({
+      center: new Vec3(0, 0, 0),
+      halfDimension: 100
+    });
     var testPoint = new Vec3(10, 10, 10);
     var secondPoint = new Vec3(-10, -10, -10);
     it('should get a point from an octree with one point', function() {
@@ -168,38 +168,76 @@ describe('Octree', function() {
     });
   });
 
-  describe('intersectsSphereInDimension', function() {
-    it('intersects top level', function() {
+  // describe('intersectsSphereInDimension', function() {
+  //   it('intersects top level', function() {
+  //     var subject = new Octree({
+  //       center: new Vec3(0, 0, 0),
+  //       halfDimension: 100
+  //     });
+
+  //     var point = new OctreePoint(new Vec3(0, 0, 0), 50);
+  //     assert.equal(subject.minX,-100);
+  //     assert.equal(subject.maxX, 100);
+
+  //     assert.equal(point.minX, -50);
+  //     assert.equal(point.maxX, 50);
+
+  //     assert(subject.intersectsSphereInDimension(point, "x"));
+  //   });
+
+  //   it('does not intersect top level', function() {
+  //     var subject = new Octree({
+  //       center: new Vec3(0, 0, 0),
+  //       halfDimension: 100
+  //     });
+
+  //     var point = new OctreePoint(new Vec3(-500, -500, -500), 100);
+  //     assert.equal(subject.minX,-100);
+  //     assert.equal(subject.maxX, 100);
+  //     assert.equal(point.minX, -600);
+  //     assert.equal(point.maxX, -400);
+
+  //     assert.equal(subject.intersectsSphereInDimension(point, "x"), false);
+  //     assert.equal(subject.intersectsSphere(point), false);
+  //   });
+  // });
+
+  describe('intersectsSphere', function() {
+
+    it('should intersect a sphere at origin', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
         halfDimension: 100
       });
 
       var point = new OctreePoint(new Vec3(0, 0, 0), 50);
-      assert.equal(subject.minX,-100);
-      assert.equal(subject.maxX, 100);
+      subject.insert(point);
 
-      assert.equal(point.minX, -50);
-      assert.equal(point.maxX, 50);
-
-      assert(subject.intersectsSphereInDimension(point, "x"));
+      assert(subject.intersectsSphere(point));
     });
 
-    it('does not intersect top level', function() {
+    it('should intersect a sphere not at origin but totally inside the octant', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
         halfDimension: 100
       });
 
-      var point = new OctreePoint(new Vec3(-500, -500, -500), 100);
-      assert.equal(subject.minX,-100);
-      assert.equal(subject.maxX, 100);
+      var point = new OctreePoint(new Vec3(10, 10, 10), 50);
+      subject.insert(point);
 
-      assert.equal(point.minX, -600);
-      assert.equal(point.maxX, -400);
+      assert(subject.intersectsSphere(point));
+    });    
 
-      assert.equal(subject.intersectsSphereInDimension(point, "x"), false);
-      assert.equal(subject.intersectsSphere(point), false);
+    it('should intersect a sphere not at origin but partially inside the octant', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+
+      var point = new OctreePoint(new Vec3(-150, 0, 0), 100);
+      subject.insert(point);
+
+      assert(subject.intersectsSphere(point));
     });    
   });
 });
