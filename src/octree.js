@@ -14,11 +14,14 @@ let valueMap = {
 }
 class Octree {
   constructor(options) {
-    this.origin = options.center;
-    this.halfDimension =  this.initializeHalfDimension(options);
+    this.deferredEnabled = (options["defer"] === true);
+    this.root            = options["root"] || false;
+    this.origin          = options.center;
+    this.halfDimension   = this.initializeHalfDimension(options);
 
     this.children = new Array(8);
-    this.point = null;
+    this.de
+    this.point    = null;
   }
 
   get maxX() { return this.origin.x + this.halfDimension.x; }
@@ -149,6 +152,18 @@ class Octree {
   }
 
   insert(point) {
+    if (this.deferredEnabled) {
+      this.deferred.push(point);
+    } else {
+      this._insert(point);
+    }
+  }
+
+  insertDeferred() {
+    this.deferred.forEach((p) => { this._insert(p); });
+  }
+
+  _insert(point) {
     var t = this;
 
     if (this.isLeafNode()) {
