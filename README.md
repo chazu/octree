@@ -1,6 +1,8 @@
 # TODO
-* Query for points in sphere [STARTED]
+* Query for points in sphere [IN PROGRESS]
 ** Write additional tests/refactor (see TODOs in test/class)
+* Write method for getting depth of octree
+* Write method to collect points
 * Allow tuning of splitting rules (multiple points per octant
 * Speed test for large octree (size of solar system)
 * Add deferred insertion
