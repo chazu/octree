@@ -29,7 +29,12 @@ class Octree {
   get minY() { return this.origin.y - this.halfDimension.y; }
   get minZ() { return this.origin.z - this.halfDimension.z; }
 
+  childrenIntersectingSphere(point) {
+    // TODO Map/reject children
+  }
+
   intersectsSphereInDimension(point, dimension) {
+    // consider extracting the three predicates here into their own functions for clarity
     var d;
      var upcasedDim = dimension.toUpperCase();
     var pointDimMin = point["min" + upcasedDim];
@@ -37,19 +42,10 @@ class Octree {
 
     var octantDimMin = this["min" + upcasedDim];
     var octantDimMax = this["max" + upcasedDim];
-    c("<<<>>>");
-    c("For dim", dimension);
-    c("point dim min", pointDimMin);
-    c("point dim max", pointDimMax);
-    c("===");
-    c("oct dim min", octantDimMin);
-    c("oct dim max",octantDimMax);
-    
     
     var match = (pointDimMax > octantDimMin && pointDimMax <= octantDimMax) ||
       (octantDimMax > pointDimMin && octantDimMin < pointDimMin)  ||
       (octantDimMin < pointDimMax && pointDimMax > octantDimMax);
-    c("Match in Dim", dimension, ":", match);
     return match;
   }
 
@@ -60,7 +56,7 @@ class Octree {
   }
 
   collectPoints() {
-    // TODO
+    // TODO Get all points here or below in the octree
   }
 
   pointsWithinRadiusOfPoint(point) {

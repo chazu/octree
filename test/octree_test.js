@@ -168,39 +168,41 @@ describe('Octree', function() {
     });
   });
 
-  // describe('intersectsSphereInDimension', function() {
-  //   it('intersects top level', function() {
-  //     var subject = new Octree({
-  //       center: new Vec3(0, 0, 0),
-  //       halfDimension: 100
-  //     });
+  describe('intersectsSphereInDimension', function() {
+    // TODO Test all three predicate statements in the method
+    // See lines 41-43 starting with var match
+    it('intersects top level', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
 
-  //     var point = new OctreePoint(new Vec3(0, 0, 0), 50);
-  //     assert.equal(subject.minX,-100);
-  //     assert.equal(subject.maxX, 100);
+      var point = new OctreePoint(new Vec3(0, 0, 0), 50);
+      assert.equal(subject.minX,-100);
+      assert.equal(subject.maxX, 100);
 
-  //     assert.equal(point.minX, -50);
-  //     assert.equal(point.maxX, 50);
+      assert.equal(point.minX, -50);
+      assert.equal(point.maxX, 50);
 
-  //     assert(subject.intersectsSphereInDimension(point, "x"));
-  //   });
+      assert(subject.intersectsSphereInDimension(point, "x"));
+    });
 
-  //   it('does not intersect top level', function() {
-  //     var subject = new Octree({
-  //       center: new Vec3(0, 0, 0),
-  //       halfDimension: 100
-  //     });
+    it('does not intersect top level', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
 
-  //     var point = new OctreePoint(new Vec3(-500, -500, -500), 100);
-  //     assert.equal(subject.minX,-100);
-  //     assert.equal(subject.maxX, 100);
-  //     assert.equal(point.minX, -600);
-  //     assert.equal(point.maxX, -400);
+      var point = new OctreePoint(new Vec3(-500, -500, -500), 100);
+      assert.equal(subject.minX,-100);
+      assert.equal(subject.maxX, 100);
+      assert.equal(point.minX, -600);
+      assert.equal(point.maxX, -400);
 
-  //     assert.equal(subject.intersectsSphereInDimension(point, "x"), false);
-  //     assert.equal(subject.intersectsSphere(point), false);
-  //   });
-  // });
+      assert.equal(subject.intersectsSphereInDimension(point, "x"), false);
+      assert.equal(subject.intersectsSphere(point), false);
+    });
+  });
 
   describe('intersectsSphere', function() {
 
@@ -238,6 +240,6 @@ describe('Octree', function() {
       subject.insert(point);
 
       assert(subject.intersectsSphere(point));
-    });    
+    });
   });
 });

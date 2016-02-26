@@ -1,10 +1,12 @@
 # TODO
 * Query for points in sphere [STARTED]
-** Write additional tests
-* Query for points in conic frustrum
-* Nearest neighbor search
-* Add deferred insertion
+** Write additional tests/refactor (see TODOs in test/class)
 * Allow tuning of splitting rules (multiple points per octant
+* Speed test for large octree (size of solar system)
+* Add deferred insertion
+* Nearest neighbor search
+
+* Query for points in conic frustrum
 * Check for collision on insertion/reinsertion
  - Assuming that reinsertion will be just a delete/reinsert
 
