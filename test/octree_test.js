@@ -242,4 +242,45 @@ describe('Octree', function() {
       assert(subject.intersectsSphere(point));
     });
   });
+
+  describe('collectPoints', function() {
+    it('should return an array', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+      var res = subject.collectPoints();
+
+      assert(Array.isArray(res));
+      assert.equal(res.length, 0);
+    });
+    
+    it('should return an array with one point from an octree of depth 0 with one point', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+
+      var point = new OctreePoint(new Vec3(1,1,1), 1);
+      subject.insert(point);
+      var res = subject.collectPoints();
+      assert.equal(res.length, 1);
+      assert.equal(res[0], point);
+    });
+
+    it('should return points from children octants', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 100
+      });
+
+      var point = new OctreePoint(new Vec3(1,1,1), 1);
+      var point2 = new OctreePoint(new Vec3(-1,2,3),1);
+
+      subject.insert(point);
+      subject.insert(point2);
+      var res = subject.collectPoints();
+      assert.equal(subject.collectPoints().length, 2);
+    });
+  });
 });

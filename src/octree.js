@@ -55,8 +55,18 @@ class Octree {
       this.intersectsSphereInDimension(point, "z");
   }
 
-  collectPoints() {
-    // TODO Get all points here or below in the octree
+  collectPoints(memo) {
+    if (!this.isLeafNode()) { // If Children
+      return _.chain(this.children)
+            .map((octant) => {
+              return octant.collectPoints();
+            })
+        .flatten()
+        .reject(isNull)
+        .value();
+    } else {
+      return this.point ? [this.point] : [];
+    };
   }
 
   pointsWithinRadiusOfPoint(point) {
@@ -226,4 +236,7 @@ class Octree {
   }
 }
 
+function isNull(x) {
+  return x === null;
+}
 module.exports = Octree;
