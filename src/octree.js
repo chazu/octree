@@ -5,13 +5,15 @@ let _      = require('lodash');
 let vektor = require('vektor');
 let Vec3   = vektor.vector;
 
-let OctreePoint = require('./octreePoint')
+let OctreePoint = require('./octreePoint');
+
 let valueMap = {
   x: [0, 0, 0, 0, 1, 1, 1, 1],
   y: [0, 0, 1, 1, 0, 0, 1, 1],
   z: [0, 1, 0, 1, 0, 1, 0, 1]
   
-}
+};
+
 class Octree {
   constructor(options) {
     this.deferredEnabled = (options["defer"] === true);
@@ -20,10 +22,10 @@ class Octree {
     this.halfDimension   = this.initializeHalfDimension(options);
 
     this.children = new Array(8);
-    this.de
     this.point    = null;
   }
 
+  // Maximum and minimum bounds for this octant
   get maxX() { return this.origin.x + this.halfDimension.x; }
   get maxY() { return this.origin.y + this.halfDimension.y; }
   get maxZ() { return this.origin.z + this.halfDimension.z; }  
@@ -32,23 +34,27 @@ class Octree {
   get minY() { return this.origin.y - this.halfDimension.y; }
   get minZ() { return this.origin.z - this.halfDimension.z; }
 
+
   childrenIntersectingSphere(point) {
-    // TODO Map/reject children
+    return this.children.filter((childOctant) => {
+      return childOctant.intersectsSphere(point);
+    });
   }
 
   intersectsSphereInDimension(point, dimension) {
     // consider extracting the three predicates here into their own functions for clarity
     var d;
-     var upcasedDim = dimension.toUpperCase();
+    var upcasedDim = dimension.toUpperCase();
     var pointDimMin = point["min" + upcasedDim];
     var pointDimMax = point["max" + upcasedDim];
 
     var octantDimMin = this["min" + upcasedDim];
     var octantDimMax = this["max" + upcasedDim];
     
-    var match = (pointDimMax > octantDimMin && pointDimMax <= octantDimMax) ||
-      (octantDimMax > pointDimMin && octantDimMin < pointDimMin)  ||
-      (octantDimMin < pointDimMax && pointDimMax > octantDimMax);
+    // var match = (pointDimMax > octantDimMin && pointDimMax <= octantDimMax) ||
+    //   (octantDimMax > pointDimMin && octantDimMin < pointDimMin)  ||
+    //   (octantDimMin < pointDimMax && pointDimMax > octantDimMax);
+    var match =  octantDimMax >= pointDimMin && pointDimMax >= octantDimMin; // x2 >= y1 and y2 >= x1
     return match;
   }
 
@@ -134,7 +140,8 @@ class Octree {
     }
 
     this.insert(point);
-  }
+    return true;
+  };
 
   setPoint(point) {
     if (!point instanceof OctreePoint) {
@@ -188,7 +195,7 @@ class Octree {
       } // END split octant with existing point data
     } else {  // END is leaf node is true
       // This isn't a leaf node - recurse into the appropriate leaf node
-      this.children[this.octantContainingPoint(point)].insert(point);
+      this.children[this.octantContainingPoint(point)]._insert(point);
     }
   }
 

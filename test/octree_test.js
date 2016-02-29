@@ -202,6 +202,19 @@ describe('Octree', function() {
       assert.equal(subject.intersectsSphereInDimension(point, "x"), false);
       assert.equal(subject.intersectsSphere(point), false);
     });
+
+    describe('should not intersect', function() {
+      it('should not intersect with a sphere outside its boundaries', function() {
+        var subject = new Octree({
+          center: new Vec3(0, 0, 0),
+          halfDimension: 50
+        });
+
+        var point = new OctreePoint(new Vec3(100, 0, 0), 10);
+
+        assert.equal(subject.intersectsSphereInDimension(point, 'x'), false);
+      });
+    });
   });
 
   describe('intersectsSphere', function() {
@@ -240,6 +253,17 @@ describe('Octree', function() {
       subject.insert(point);
 
       assert(subject.intersectsSphere(point));
+    });
+
+    it('should not intersect a sphere outside its bounds', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 50
+      });
+
+      var point = new OctreePoint(new Vec3(300, 300, 300), 10);
+
+      assert.equal(subject.intersectsSphere(point), false);
     });
   });
 
@@ -281,6 +305,20 @@ describe('Octree', function() {
       subject.insert(point2);
       var res = subject.collectPoints();
       assert.equal(subject.collectPoints().length, 2);
+    });
+  });
+
+  describe('childrenIntersectingSphere', function() {
+    it('should return all child octants which intersect with a points sphere', function(){
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        halfDimension: 50
+      });
+
+      subject.initializeChildren();
+      var point = new OctreePoint(new Vec3(30, 0, 0), 10);
+
+      assert.equal(subject.childrenIntersectingSphere(point).length, 4);
     });
   });
 });
