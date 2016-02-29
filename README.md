@@ -1,17 +1,15 @@
 # TODO
-* Query for points in sphere [IN PROGRESS]
-** Write additional tests/refactor (see TODOs in test/class)
-* Write method for getting depth of octree
+* Query for points in sphere
 
-* Allow tuning of splitting rules (multiple points per octant
-* Speed test for large octree (size of solar system)
-* Method to see if more than one octree contains point when inserting
+* Write method for getting depth of octree
+* Allow tuning of splitting rules (multiple points per octant)
+* Refactor insertion to allow for non-leaf nodes to contain points which intersect with more than one child octant
+
 * Check for collision on insertion/reinsertion [resinsertion being deletion and then insertion]
+* Speed test for large octree (size of solar system)
 * Test deferred insertion
 * Nearest neighbor search
-* Query for points in conic frustrum
-
-
+* Query for points in conic frustrum (lol wat)
  - Assuming that reinsertion will be just a delete/reinsert
 
 # DONE
@@ -20,6 +18,15 @@
 * Start using OctantPoint class
 * Write method to collect points
 * Add deferred insertion
+* Add sphere intersection detection for points in octants
+* Method to see if more than one octree contains point when inserting
+* Refactor _insert for clarity
+
+
+
+
+
+
 
 from http://stackoverflow.com/questions/7067742/range-search-within-specified-radius-in-an-octree
 if (pX < minX of Cell)

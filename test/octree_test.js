@@ -13,16 +13,16 @@ describe('Octree', function() {
     });
 
     it('should give 0 for -, -, -', function() {
-      assert.equal(subject.octantContainingPoint(new Vec3(-1, -1, -1)), 0);
+      assert.equal(subject.indexOfOctantContainingPoint(new Vec3(-1, -1, -1)), 0);
 
     });
 
     it('should give 1 for -, -, +', function() {
-      assert.equal(subject.octantContainingPoint(new Vec3(-1, -1, 1)), 1);
+      assert.equal(subject.indexOfOctantContainingPoint(new Vec3(-1, -1, 1)), 1);
     });
 
     it('should give 2 for -, +, -', function() {
-      assert.equal(subject.octantContainingPoint(new Vec3(-1, 1, -1)), 2);
+      assert.equal(subject.indexOfOctantContainingPoint(new Vec3(-1, 1, -1)), 2);
     });
   });
 

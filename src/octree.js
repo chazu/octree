@@ -95,7 +95,7 @@ class Octree {
     };
   }
 
-  octantContainingPoint(point) {
+  indexOfOctantContainingPoint(point) {
     var oct = 0;
     if(point.x >= this.origin.x) oct = oct | 4;
     if(point.y >= this.origin.y) oct = oct | 2;
@@ -103,10 +103,10 @@ class Octree {
 
     return oct;
   }
-
-  isLeafNode() {
-    return this.children[0] === undefined ||
-      this.children[0] === null;
+  
+  octantContainingPoint(point) {
+    let index = this.indexOfOctantContainingPoint(point);
+    return this.children[index];
   }
 
   octreeAtIndexShouldBePositive(dimension, index) {
@@ -170,6 +170,11 @@ class Octree {
     this.deferred.forEach((p) => { this._insert(p); });
   }
 
+  isLeafNode() {
+    return this.children[0] === undefined ||
+      this.children[0] === null;
+  }
+
   _insert(point) {
     var t = this;
 
@@ -185,13 +190,11 @@ class Octree {
         this.initializeChildren();
 
         // Put the old point data into its new home
-        let numberOfOctantForOldPoint = this.octantContainingPoint(this.point);
-        this.children[numberOfOctantForOldPoint].insert(this.point);
+        this.octantContainingPoint(this.point).insert(this.point);
         this.point = null;
 
         // Insert the point we orignally came here to insert
-        let numberOfOctantForNewPoint = this.octantContainingPoint(point);
-        this.children[numberOfOctantForNewPoint].insert(point);
+        this.octantContainingPoint(point).insert(point);
       } // END split octant with existing point data
     } else {  // END is leaf node is true
       // This isn't a leaf node - recurse into the appropriate leaf node
