@@ -1,6 +1,5 @@
 "use strict";
-//var c = console.log;
-var c = function() {};
+
 let _      = require('lodash');
 let vektor = require('vektor');
 let Vec3   = vektor.vector;
@@ -20,6 +19,7 @@ class Octree {
     this.root            = options["root"] || false;
     this.origin          = options.center;
     this.halfDimension   = this.initializeHalfDimension(options);
+    this.breakpoint      = options.breakpoint || 6;
 
     this.children = new Array(8);
     this.point    = null;
