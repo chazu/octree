@@ -9,6 +9,7 @@ describe('Octree', function() {
   describe('octantContainingPoint', function() {
     var subject = new Octree({
       center: new Vec3(0, 0, 0),
+      root: true,
       halfDimension: 100
     });
 
@@ -29,6 +30,7 @@ describe('Octree', function() {
   describe('octreeAtIndexShouldBePositive', function() {
     var subject = new Octree({
       center: new Vec3(0, 0, 0),
+      root: true,
       halfDimension: 100
     });
 
@@ -44,6 +46,7 @@ describe('Octree', function() {
   describe('Initialization', function() {
     var subject = new Octree({
       center: new Vec3(0, 0, 0),
+      root: true,
       halfDimension: 100
     });
     it('should instantiate properly', function() {
@@ -72,6 +75,7 @@ describe('Octree', function() {
     it('should be true if no points are in octree', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -81,21 +85,23 @@ describe('Octree', function() {
     it('should be true if one point is in octree', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
-      subject.insert(new Vec3(1,1,1));
+      subject.insert(new OctreePoint(new Vec3(1,1,1), 1));
       assert(subject.isLeafNode());
     });
 
     it('should be false if two points are in octree', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
-      subject.insert(new Vec3(1,1,1));
-      subject.insert(new Vec3(-1, -1, -1));
+      subject.insert(new OctreePoint(new Vec3(1,1,1), 1));
+      subject.insert(new OctreePoint(new Vec3(-1, -1, -1), 1));
     });
 
   });
@@ -103,18 +109,20 @@ describe('Octree', function() {
   describe('insert', function() {
     var subject = new Octree({
       center: new Vec3(0, 0, 0),
+      root: true,
       halfDimension: 100
     });
     it('should be able to add and retrieve a point', function() {
-      var testPoint = new Vec3(10, 10, 10);
+      var testPoint = new OctreePoint(new Vec3(10, 10, 10), 1);
       subject.insert(testPoint);
 
       assert(!(subject.point === null));
+      assert(subject.isLeafNode());
       assert.equal(subject.point.x, 10);
     });
 
     it('should be able to add a second point', function() {
-      var secondPoint = new Vec3(-10, -10, -10);
+      var secondPoint = new OctreePoint(new Vec3(-10, -10, -10), 1);
       subject.insert(secondPoint);
 
       assert.equal(subject.point, null);
@@ -122,10 +130,18 @@ describe('Octree', function() {
       assert.equal(subject.children[7].point.x, 10);
     });
 
+    it('should be able to hold three points', function() {
+      var thirdPoint = new OctreePoint(new Vec3(-10, 10, -10), 1);
+      subject.insert(thirdPoint);
+
+      assert.equal(subject.point, null);
+    });
+
     it('should blow up on insertion of a point which already exists', function() {
-      var duplicatePoint = new Vec3(-10, -10, -10);
+      var duplicatePoint = new OctreePoint(new Vec3(-10, -10, -10), 1);
       assert.throws(() => subject.insert(duplicatePoint), Error);
     });
+
   });
 
   describe('safeInsert', function() {
@@ -136,6 +152,7 @@ describe('Octree', function() {
     it('should get a point if it exists', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
       var testPoint = new Vec3(10, 10, 10);
@@ -150,10 +167,11 @@ describe('Octree', function() {
   describe('getPointsInsideBox', function() {
     var subject = new Octree({
       center: new Vec3(0, 0, 0),
+      root: true,
       halfDimension: 100
     });
-    var testPoint = new Vec3(10, 10, 10);
-    var secondPoint = new Vec3(-10, -10, -10);
+    var testPoint   = new OctreePoint(new Vec3(10, 10, 10));
+    var secondPoint = new OctreePoint(new Vec3(-10, -10, -10));
     it('should get a point from an octree with one point', function() {
       subject.insert(testPoint);
       assert.equal(subject.getPointsInsideBox(new Vec3(-10, -10, -10),
@@ -174,6 +192,7 @@ describe('Octree', function() {
     it('intersects top level', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -190,6 +209,7 @@ describe('Octree', function() {
     it('does not intersect top level', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -207,6 +227,7 @@ describe('Octree', function() {
       it('should not intersect with a sphere outside its boundaries', function() {
         var subject = new Octree({
           center: new Vec3(0, 0, 0),
+          root: true,
           halfDimension: 50
         });
 
@@ -222,6 +243,7 @@ describe('Octree', function() {
     it('should intersect a sphere at origin', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -234,6 +256,7 @@ describe('Octree', function() {
     it('should intersect a sphere not at origin but totally inside the octant', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -246,6 +269,7 @@ describe('Octree', function() {
     it('should intersect a sphere not at origin but partially inside the octant', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -258,6 +282,7 @@ describe('Octree', function() {
     it('should not intersect a sphere outside its bounds', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 50
       });
 
@@ -271,6 +296,7 @@ describe('Octree', function() {
     it('should return an array', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
       var res = subject.collectPoints();
@@ -282,6 +308,7 @@ describe('Octree', function() {
     it('should return an array with one point from an octree of depth 0 with one point', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -295,6 +322,7 @@ describe('Octree', function() {
     it('should return points from children octants', function() {
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 100
       });
 
@@ -312,6 +340,7 @@ describe('Octree', function() {
     it('should return all child octants which intersect with a points sphere', function(){
       var subject = new Octree({
         center: new Vec3(0, 0, 0),
+        root: true,
         halfDimension: 50
       });
 

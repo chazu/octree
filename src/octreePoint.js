@@ -24,6 +24,12 @@ class OctreePoint {
     return this.locationVector;
   }
 
+  equalsOtherPoint(other) {
+    return this.x === other.x &&
+      this.y === other.y &&
+      this.z === other.z;
+  }
+
   intersects(otherPoint) {
     return this.distanceTo(otherPoint) <= 0;
   }

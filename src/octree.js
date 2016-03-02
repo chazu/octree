@@ -187,6 +187,9 @@ class Octree {
         return;
       } else { // END octant has no point data
         // We need to split this octant
+        if (this.point.equalsOtherPoint(point)) {
+          throw new Error("Cannot insert existing point");
+        }
         this.initializeChildren();
 
         // Put the old point data into its new home
@@ -198,7 +201,7 @@ class Octree {
       } // END split octant with existing point data
     } else {  // END is leaf node is true
       // This isn't a leaf node - recurse into the appropriate leaf node
-      this.children[this.octantContainingPoint(point)]._insert(point);
+      this.octantContainingPoint(point).insert(point);
     }
   }
 

@@ -21,18 +21,4 @@
 * Add sphere intersection detection for points in octants
 * Method to see if more than one octree contains point when inserting
 * Refactor _insert for clarity
-
-
-
-
-
-
-
-from http://stackoverflow.com/questions/7067742/range-search-within-specified-radius-in-an-octree
-if (pX < minX of Cell)
-    dx = |px - minX|
-else if (px > maxX of Cell)
-    dx = |px-maxX|
-Same for other dimensions
-
-return (|dx,dy,dz|<=r)
+* Fix stack overflow for identical points
