@@ -1,8 +1,7 @@
 # TODO
-* Query for points in sphere
-
-* Write method for getting depth of octree
 * Allow tuning of splitting rules (multiple points per octant)
+* Query for points in sphere
+* Write method for getting depth of octree
 * Refactor insertion to allow for non-leaf nodes to contain points which intersect with more than one child octant
 
 * Check for collision on insertion/reinsertion [resinsertion being deletion and then insertion]
