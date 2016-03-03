@@ -35,6 +35,16 @@ class Octree {
   get minZ() { return this.origin.z - this.halfDimension.z; }
 
 
+  depth() {
+    if (this.isLeafNode()) {
+      return 1;
+    } else {
+      return 1 + _(this.children)
+        .map((octant) => octant.depth())
+        .max();
+    }
+  }
+
   childrenIntersectingSphere(point) {
     return this.children.filter((childOctant) => {
       return childOctant.intersectsSphere(point);

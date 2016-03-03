@@ -6,6 +6,31 @@ var OctreePoint = require('./../src/octreePoint');
 
 describe('Octree', function() {
 
+  describe('depth', function() {
+    it('should return 1 for an empty root Octree', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        root: true,
+        halfDimension: 100
+      });
+      assert.equal(subject.depth(), 1);
+    });
+
+
+    it('should return 2 for an octree with two points', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        root: true,
+        halfDimension: 100
+      });
+
+      subject.insert(new OctreePoint(new Vec3(10, 5, 4), 1));
+      subject.insert(new OctreePoint(new Vec3(-10, 1, 1), 1));
+
+      assert.equal(subject.depth(), 2);
+    });
+  });
+
   describe('octantContainingPoint', function() {
     var subject = new Octree({
       center: new Vec3(0, 0, 0),
@@ -142,6 +167,9 @@ describe('Octree', function() {
       assert.throws(() => subject.insert(duplicatePoint), Error);
     });
 
+    it('should be able to insert two points in one child octant', function() {
+      // pending
+    });
   });
 
   describe('safeInsert', function() {
