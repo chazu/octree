@@ -1,9 +1,11 @@
 # TODO
-* Allow tuning of splitting rules (multiple points per octant)
-* Write method for getting depth of octree
+* Test that splitting occurs properly
+* Test that nonstandard breakpoints work
+* Ensure that point radius is taken into account when splitting/inserting
+* Disallow insertion of points which would collide with other points (considering radius)
 * Write method for whether child octant can contain sphere
 * Query for points in sphere
-* Refactor insertion to allow for non-leaf nodes to contain points which intersect with more than one child octant
+* Refactor insertion to allow for non-leaf nodes to contain points which intersect with more than one child octant (see above)
 
 * Check for collision on insertion/reinsertion [resinsertion being deletion and then insertion]
 * Speed test for large octree (size of solar system)
@@ -11,6 +13,7 @@
 * Nearest neighbor search
 * Query for points in conic frustrum (lol wat)
  - Assuming that reinsertion will be just a delete/reinsert
+
 
 # DONE
 * Add bounding sphere to OctantPoint (radius)
@@ -22,3 +25,5 @@
 * Method to see if more than one octree contains point when inserting
 * Refactor _insert for clarity
 * Fix stack overflow for identical points
+* Allow tuning of splitting rules (multiple points per octant)
+* Write method for getting depth of octree
