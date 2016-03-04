@@ -1,9 +1,12 @@
 # TODO
-* Ensure that point radius is taken into account when splitting/inserting
+
 * Disallow insertion of points which would collide with other points (considering radius)
-* Write method for whether child octant can contain sphere
+
 * Query for points in sphere
-* Refactor insertion to allow for non-leaf nodes to contain points which intersect with more than one child octant (see above)
+
+* Write method for whether child octant can contain sphere
+* Ensure that point radius is taken into account when splitting/inserting
+* Refactor insertion so that non-leaf nodes contain points which intersect with more than one child octant (see above)
 
 * Check for collision on insertion/reinsertion [resinsertion being deletion and then insertion]
 * Speed test for large octree (size of solar system)
