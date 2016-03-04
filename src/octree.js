@@ -13,6 +13,13 @@ let valueMap = {
   
 };
 
+// WHOA WHOA WHOA...yeah whatever, I'm fine with this.
+Array.prototype.remove = function(from, to) {
+  var rest = this.slice((to || from) + 1 || this.length);
+  this.length = from < 0 ? this.length + from : from;
+  return this.push.apply(this, rest);
+};
+
 class Octree {
   constructor(options) {
     this.deferredEnabled = (options["defer"] === true);
@@ -22,7 +29,7 @@ class Octree {
     this.breakpoint      = options.breakpoint || 6;
 
     this.children = new Array(8);
-    this.point    = null;
+    this.points   = [];
   }
 
   // Maximum and minimum bounds for this octant
@@ -84,11 +91,13 @@ class Octree {
         .reject(isNull)
         .value();
     } else {
-      return this.point ? [this.point] : [];
+      return this.points;
     };
   }
 
-  pointsWithinRadiusOfPoint(point) {
+  pointsCollidingWithPoint(point) {
+    // TODO - Collect points from the topmost octant intersecting sphere
+    // and all its childrens
   }
 
   initializeHalfDimension(options) {
@@ -157,7 +166,7 @@ class Octree {
     if (!point instanceof OctreePoint) {
       throw new Error("Octree can only contain OctreePoint instances!");
     }
-    this.point = point;
+    this.points.push(point);
   }
 
   dimensionsOfChildOctants() {
@@ -185,26 +194,38 @@ class Octree {
       this.children[0] === null;
   }
 
+  hasPointData() {
+    return this.points.length > 0;
+  }
+
+  containsPointEqualTo(other) {
+    return _.some(this.points, (point) => point.equalsOtherPoint(other));
+  }
+  
   _insert(point) {
     var t = this;
 
     if (this.isLeafNode()) {
-      if (this.point === null) {
+      if (this.containsPointEqualTo(point)) {
+        throw new Error("Cannot insert existing point");
+      }
+
+      if (this.points.length < this.breakpoint) {
         // Octant has no point data or has less point data than
         // we've established as a threshold for splitting -
         // just set the point data
         this.setPoint(point);
         return;
-      } else { // END octant has no point data
+      } else if (this.needsToSplit()) { // END octant has no point data
         // We need to split this octant
-        if (this.point.equalsOtherPoint(point)) {
-          throw new Error("Cannot insert existing point");
-        }
         this.initializeChildren();
 
         // Put the old point data into its new home
-        this.octantContainingPoint(this.point).insert(this.point);
-        this.point = null;
+        // TODO if the sphere won't fit into the child octant, it has to stay here
+        _.each(this.points, (aPoint) => {
+          this.octantContainingPoint(aPoint).insert(aPoint);
+          this._removePoint(aPoint);
+        });
 
         // Insert the point we orignally came here to insert
         this.octantContainingPoint(point).insert(point);
@@ -215,10 +236,20 @@ class Octree {
     }
   }
 
+  _removePoint(point) {
+    // Remove a point from this octant's array.
+    this.points.remove(this.points.indexOf(point));
+  }
+
+  needsToSplit() {
+    return this.points.length >= this.breakpoint;
+  }
+
   delete(point) {
+    // Delete a point entirely from the octree
     if (this.isLeafNode()) {
-      if (this.setPoint(point)) {
-        this.point = null;
+      if (_.contains(this.points, point)) {
+        this._removePoint(point);
         return true;
       }
       return false;
@@ -228,15 +259,14 @@ class Octree {
   }
 
   getPoint(point) {
-    if (this.isLeafNode()) {
-      if (this.point &&
-          point.x === this.point.x &&
-          point.y === this.point.y &&
-          point.z === this.point.z) {
-        return this.point;
-      } else {
+    if (this.isLeafNode() && this.hasPointData()) {
+      return _.find(this.points, (aPoint) => {
+        return point.x === aPoint.x &&
+          point.y === aPoint.y &&
+          point.z === aPoint.z;
+      });
+    } else if (this.isLeafNode()){
         return false;
-      }
     } else {
       return this.children[this.octantContainingPoint(point)].getPoint(point);
     }
@@ -246,16 +276,18 @@ class Octree {
     return _.flatten(this._getPointsInsideBox(bmin, bmax));
   }
 
+  // TODO Continue from here
   _getPointsInsideBox(bmin, bmax) {
     let res = [];
-    if (this.isLeafNode()) {
-      if (!(this.point === null)) {
-        if (!((this.point.x > bmax.x || this.point.y > bmax.y || this.point.z > bmax.z) ||
-              (this.point.x < bmin.x || this.point.y < bmin.y || this.point.z < bmin.z))) { // Point is inside bounding box
-          res.push(this.point);
-        }
+      if (this.hasPointData()) {
+        this.points.forEach((aPoint) => {
+          if (!((aPoint.x > bmax.x || aPoint.y > bmax.y || aPoint.z > bmax.z) ||
+                (aPoint.x < bmin.x || aPoint.y < bmin.y || aPoint.z < bmin.z))) { // Point is inside bounding box
+            res.push(aPoint);
+          }
+        });
       }
-    } else {
+    if (!(this.isLeafNode())) {
       this.children.forEach((childOctant) => {
         if (childOctant.intersectsQueryRectangle(bmin, bmax)) {
           res.push(childOctant._getPointsInsideBox(bmin, bmax));
