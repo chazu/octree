@@ -222,7 +222,7 @@ class Octree {
 
         // Put the old point data into its new home
         // TODO if the sphere won't fit into the child octant, it has to stay here
-        _.each(this.points, (aPoint) => {
+        this.points.forEach((aPoint) => {
           this.octantContainingPoint(aPoint).insert(aPoint);
           this._removePoint(aPoint);
         });

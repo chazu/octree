@@ -1,6 +1,4 @@
 # TODO
-* Test that splitting occurs properly
-* Test that nonstandard breakpoints work
 * Ensure that point radius is taken into account when splitting/inserting
 * Disallow insertion of points which would collide with other points (considering radius)
 * Write method for whether child octant can contain sphere
@@ -27,3 +25,5 @@
 * Fix stack overflow for identical points
 * Allow tuning of splitting rules (multiple points per octant)
 * Write method for getting depth of octree
+* Test that splitting occurs properly (via #depth)
+* Test that nonstandard breakpoints work (via #depth)

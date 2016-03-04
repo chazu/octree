@@ -16,18 +16,36 @@ describe('Octree', function() {
       assert.equal(subject.depth(), 1);
     });
 
+    it('should return 1 for an Octree with breakpoint-1', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        root: true,
+        halfDimension: 100,
+        breakpoint: 4
+      });
 
-    xit('should return 2 for an octree with breakpoint+1 points', function() {
-      // var subject = new Octree({
-      //   center: new Vec3(0, 0, 0),
-      //   root: true,
-      //   halfDimension: 100
-      // });
+      subject.insert(new OctreePoint(new Vec3(10, 5, 4), 1));
+      subject.insert(new OctreePoint(new Vec3(-10, 1, 1), 1));
+      subject.insert(new OctreePoint(new Vec3(10, -5, 4), 1));
+      assert.equal(subject.depth(), 1);
+    });
+    
 
-      // subject.insert(new OctreePoint(new Vec3(10, 5, 4), 1));
-      // subject.insert(new OctreePoint(new Vec3(-10, 1, 1), 1));
+    it('should return 2 for an octree with breakpoint+1 points', function() {
+      var subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        root: true,
+        halfDimension: 100,
+        breakpoint: 4
+      });
 
-      // assert.equal(subject.depth(), 2);
+      subject.insert(new OctreePoint(new Vec3(10, 5, 4), 1));
+      subject.insert(new OctreePoint(new Vec3(-10, 1, 1), 1));
+      subject.insert(new OctreePoint(new Vec3(10, -5, 4), 1));
+      subject.insert(new OctreePoint(new Vec3(10, 5, -4), 1));
+      subject.insert(new OctreePoint(new Vec3(-10, 5, -4), 1));
+
+      assert.equal(subject.depth(), 2);
     });
   });
 
