@@ -6,6 +6,8 @@
 
 * Query for points in sphere
 
+* implement reinsert method which handles collisions as events to be sent to the client (game) - these represent collisions between moving objects in the game space, therefore have relevance to the game state. First insertions are assumed to be required to not cause collisions.
+
 * Write method for whether child octant can contain sphere
 * Ensure that point radius is taken into account when splitting/inserting
 * Refactor insertion so that non-leaf nodes contain points which intersect with more than one child octant (see above)

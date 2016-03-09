@@ -59,7 +59,10 @@ class Octree {
     });
   }
 
-  
+  sphereFitsInsideOctant(point) {
+    // TODO return true if the point fits within the boundaries of the octant, else false
+  }
+
   intersectsSphereInDimension(point, dimension) {
     // consider extracting the three predicates here into their own functions for clarity
     var d;
@@ -132,6 +135,11 @@ class Octree {
 
   octreeAtIndexShouldBePositive(dimension, index) {
     return !(valueMap[dimension][index]);
+  }
+
+  collisionCheckForInsert(point) {
+    // Collect all points from this octree and any children intersecting the point sphere.
+    // Return object including objects in collision
   }
 
   initializeChildren() {
@@ -233,7 +241,11 @@ class Octree {
         this.octantContainingPoint(point).insert(point);
       } // END split octant with existing point data
     } else {  // END is leaf node is true
-      // This isn't a leaf node - recurse into the appropriate leaf node
+      // TODO
+      // This isn't a leaf node
+      // If the point we're inserting can't fit entirely into one child octant
+      // keep it here
+      // otherwise recurse into the appropriate leaf node
       this.octantContainingPoint(point).insert(point);
     }
   }
