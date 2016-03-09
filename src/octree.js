@@ -41,7 +41,7 @@ class Octree {
   get minY() { return this.origin.y - this.halfDimension.y; }
   get minZ() { return this.origin.z - this.halfDimension.z; }
 
-
+  // Get maximum depth
   depth() {
     if (this.isLeafNode()) {
       return 1;
@@ -52,12 +52,14 @@ class Octree {
     }
   }
 
+  // Get child octants which intersect sphere/point
   childrenIntersectingSphere(point) {
     return this.children.filter((childOctant) => {
       return childOctant.intersectsSphere(point);
     });
   }
 
+  
   intersectsSphereInDimension(point, dimension) {
     // consider extracting the three predicates here into their own functions for clarity
     var d;
@@ -276,7 +278,6 @@ class Octree {
     return _.flatten(this._getPointsInsideBox(bmin, bmax));
   }
 
-  // TODO Continue from here
   _getPointsInsideBox(bmin, bmax) {
     let res = [];
       if (this.hasPointData()) {
@@ -295,6 +296,10 @@ class Octree {
       });
     }
     return res;
+  }
+
+  getPointsInsideSphere(point) {
+    // TODO
   }
 
   intersectsQueryRectangle(bmin, bmax) {

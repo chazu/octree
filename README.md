@@ -1,5 +1,7 @@
 # TODO
 
+* collectPoints should include own points as well as childrens'
+
 * Disallow insertion of points which would collide with other points (considering radius)
 
 * Query for points in sphere
