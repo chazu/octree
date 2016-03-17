@@ -60,7 +60,9 @@ class Octree {
   }
 
   sphereFitsInsideOctant(point) {
-    // TODO return true if the point fits within the boundaries of the octant, else false
+    return point.maxZ < this.maxZ && point.minZ > this.minZ &&
+      point.maxY < this.maxY && point.minY > this.minY &&
+      point.maxX < this.maxX && point.minX > this.minX;
   }
 
   intersectsSphereInDimension(point, dimension) {
@@ -231,10 +233,15 @@ class Octree {
         this.initializeChildren();
 
         // Put the old point data into its new home
-        // TODO if the sphere won't fit into the child octant, it has to stay here
         this.points.forEach((aPoint) => {
-          this.octantContainingPoint(aPoint).insert(aPoint);
-          this._removePoint(aPoint);
+          // If the point fits totally inside its new, split octant, move it.
+          // Otherwise it has to stay here
+          var belongsInOctant = this.octantContainingPoint(aPoint);
+
+          if (belongsInOctant.sphereFitsInsideOctant(point)) {
+            this.octantContainingPoint(aPoint).insert(aPoint);
+            this._removePoint(aPoint);
+          }
         });
 
         // Insert the point we orignally came here to insert
@@ -246,7 +253,13 @@ class Octree {
       // If the point we're inserting can't fit entirely into one child octant
       // keep it here
       // otherwise recurse into the appropriate leaf node
-      this.octantContainingPoint(point).insert(point);
+      var belongsInOctant = this.octantContainingPoint(point);
+
+      if (belongsInOctant.sphereFitsInsideOctant(point)) {
+        this.octantContainingPoint(point).insert(point);        
+      } else {
+        this.setPoint(point);
+      }
     }
   }
 
@@ -282,6 +295,7 @@ class Octree {
     } else if (this.isLeafNode()){
         return false;
     } else {
+      console.log(this.octantContainingPoint(point));
       return this.children[this.octantContainingPoint(point)].getPoint(point);
     }
   }
