@@ -60,6 +60,8 @@ class Octree {
   }
 
   sphereFitsInsideOctant(point) {
+    console.log(point);
+    console.log(this);
     return point.maxZ < this.maxZ && point.minZ > this.minZ &&
       point.maxY < this.maxY && point.minY > this.minY &&
       point.maxX < this.maxX && point.minX > this.minX;
@@ -129,7 +131,7 @@ class Octree {
 
     return oct;
   }
-  
+
   octantContainingPoint(point) {
     let index = this.indexOfOctantContainingPoint(point);
     return this.children[index];
@@ -159,6 +161,7 @@ class Octree {
 
       t.children[i] = new Octree({
         center: newOrigin,
+        breakpoint: this.breakpoint,
         halfDimension: t.halfDimension.x * 0.5
       });
     });
@@ -230,15 +233,24 @@ class Octree {
         return;
       } else if (this.needsToSplit()) { // END octant has no point data
         // We need to split this octant
+        console.log("this needs to split");
         this.initializeChildren();
 
         // Put the old point data into its new home
         this.points.forEach((aPoint) => {
+          console.log("does it fit?");
           // If the point fits totally inside its new, split octant, move it.
           // Otherwise it has to stay here
           var belongsInOctant = this.octantContainingPoint(aPoint);
-
+          console.log(belongsInOctant);
+          console.log(point);
+          console.log("---");
+          console.log("minX:", belongsInOctant.minX, " ", "maxX:", belongsInOctant.maxX);
+          console.log("minY:", belongsInOctant.minY, " ", "maxY:", belongsInOctant.maxY);
+          console.log("minZ:", belongsInOctant.minZ, " ", "maxZ:", belongsInOctant.maxZ);
+          console.log("===");
           if (belongsInOctant.sphereFitsInsideOctant(point)) {
+            console.log("Yep it fits");
             this.octantContainingPoint(aPoint).insert(aPoint);
             this._removePoint(aPoint);
           }
