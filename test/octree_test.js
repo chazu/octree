@@ -73,9 +73,58 @@ describe('Octree', function() {
     });
   });
 
-  describe.only('initializeChildren', function() {
-    xit('places the octants in the proper order', function() {
-      // TODO make sure that the octants are constructed properly w/r/t their min and max
+  describe('initializeChildren', function() {
+    it('places the octants in the proper order', function() {
+      let subject = new Octree({
+        center: new Vec3(0, 0, 0),
+        root: true,
+        halfDimension: 100,
+        breakpoint: 4
+      });
+
+      subject.initializeChildren();
+
+      assert(subject.children[0] instanceof Octree);
+      assert(subject.children[1] instanceof Octree);
+      assert(subject.children[2] instanceof Octree);
+      assert(subject.children[3] instanceof Octree);
+      assert(subject.children[4] instanceof Octree);
+      assert(subject.children[5] instanceof Octree);
+      assert(subject.children[6] instanceof Octree);
+      assert(subject.children[7] instanceof Octree);
+
+      assert(subject.children[0].origin.x < 0);
+      assert(subject.children[0].origin.y < 0);
+      assert(subject.children[0].origin.z < 0);      
+
+      assert(subject.children[1].origin.x < 0);
+      assert(subject.children[1].origin.y < 0);
+      assert(subject.children[1].origin.z > 0);      
+
+      assert(subject.children[2].origin.x < 0);
+      assert(subject.children[2].origin.y > 0);
+      assert(subject.children[2].origin.z < 0);      
+
+      assert(subject.children[3].origin.x < 0);
+      assert(subject.children[3].origin.y > 0);
+      assert(subject.children[3].origin.z > 0);      
+
+      assert(subject.children[4].origin.x > 0);
+      assert(subject.children[4].origin.y < 0);
+      assert(subject.children[4].origin.z < 0);      
+
+      assert(subject.children[5].origin.x > 0);
+      assert(subject.children[5].origin.y < 0);
+      assert(subject.children[5].origin.z > 0);      
+
+      assert(subject.children[6].origin.x > 0);
+      assert(subject.children[6].origin.y > 0);
+      assert(subject.children[6].origin.z < 0);      
+
+      assert(subject.children[7].origin.x > 0);
+      assert(subject.children[7].origin.y > 0);
+      assert(subject.children[7].origin.z > 0);      
+
     });
 
   });
@@ -89,32 +138,31 @@ describe('Octree', function() {
 
     subject.initializeChildren();
 
-    xit('should return 0th child for point at -10, -10, -10', function() {
+    it('should return 0th child for point at -10, -10, -10', function() {
 
       let childZeroPoint = new OctreePoint(new Vec3(-10, -10, -10), 1);
       let containingOctant = subject.octantContainingPoint(childZeroPoint);
 
       assert.equal(subject.children.indexOf(containingOctant), 0);
       assert(containingOctant.sphereFitsInsideOctant(childZeroPoint));
-      // TODO test with actual OctreePoint, make sure it fits
     });
   });
 
-  describe('octreeAtIndexShouldBePositive', function() {
-    let subject = new Octree({
-      center: new Vec3(0, 0, 0),
-      root: true,
-      halfDimension: 100
-    });
+  // describe('octreeAtIndexShouldBePositive', function() {
+  //   let subject = new Octree({
+  //     center: new Vec3(0, 0, 0),
+  //     root: true,
+  //     halfDimension: 100
+  //   });
 
-    it('should be true for 0', function() {
-      assert(subject.octreeAtIndexShouldBePositive('x', 0));
-    });
+  //   it('should be true for 0', function() {
+  //     assert(subject.octreeAtIndexShouldBePositive('x', 0));
+  //   });
 
-    it('should be false for 4', function() {
-      assert(subject.octreeAtIndexShouldBePositive('x', 0));
-    });
-  });
+  //   it('should be false for 4', function() {
+  //     assert(subject.octreeAtIndexShouldBePositive('x', 0));
+  //   });
+  // });
 
   describe('Initialization', function() {
     let subject = new Octree({
@@ -487,7 +535,7 @@ describe('Octree', function() {
       let res = subject.collectPoints();
       assert(subject.depth() > 1);
       console.log(subject.depth);
-      //assert.equal(subject.collectPoints().length, 11);
+      assert.equal(subject.collectPoints().length, 11);
     });
   });
 
