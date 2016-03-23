@@ -74,10 +74,6 @@ class Octree {
     var octantDimMin = this["min" + upcasedDim];
     var octantDimMax = this["max" + upcasedDim];
 
-    //console.log("Dimension: ", dimension);
-    //console.log("---------------");
-    //console.log("pointMin:", pointDimMin, " pointMax:", pointDimMax);
-    //console.log("octantMin:", octantDimMin, " octantMax:", octantDimMax);
     return octantDimMin <= pointDimMin &&
       octantDimMax >= pointDimMax;
   }
@@ -233,7 +229,6 @@ class Octree {
   }
   
   _insert(point) {
-    //console.log("Inserting a point...")
     var t = this;
 
     if (this.isLeafNode()) {
@@ -248,27 +243,19 @@ class Octree {
         this.setPoint(point);
         return;
       } else if (this.needsToSplit()) { // END octant has no point data
-        //console.log("Splitting this octant");
         // We need to split this octant
         this.initializeChildren();
         let pointsToDistribute = clone(this.points);
         this.points = [];
 
-        //console.log("Redistributing Points");
         // Put the old point data into its new home
         pointsToDistribute.forEach((aPoint) => {
-          //console.log("--------------------------------");
-          //console.log(aPoint);          
           // If the point fits totally inside its new, split octant, move it.
           // Otherwise it has to stay here
           var belongsInOctant = this.octantContainingPoint(aPoint);
-          //console.log("belongs in octant:", belongsInOctant);
-          //console.log("JUDGEMENT:", belongsInOctant.sphereFitsInsideOctant(aPoint));
           if (belongsInOctant.sphereFitsInsideOctant(aPoint)) {
-            //console.log("Headed down a level!");
             this.octantContainingPoint(aPoint).insert(aPoint);
           } else { // Yay! We get to keep him!
-            //console.log("Stayin' put where he was before")
             this.setPoint(aPoint);
           }
         });
