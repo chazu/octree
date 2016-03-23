@@ -1,14 +1,14 @@
 # TODO
 
-* Disallow insertion of points which would collide with other points (considering radius)
-
 * Query for points in sphere
 
+* Disallow or flag insertion of points which would collide with other points (considering radius)
 * implement reinsert method which handles collisions as events to be sent to the client (game) - these represent collisions between moving objects in the game space, therefore have relevance to the game state. First insertions are assumed to be required to not cause collisions.
 
 * Check for collision on insertion/reinsertion [resinsertion being deletion and then insertion]
-* Speed test for large octree (size of solar system)
+
 * Test deferred insertion
+
 * Nearest neighbor search
 * Query for points in conic frustrum (lol wat)
  - Assuming that reinsertion will be just a delete/reinsert
@@ -32,3 +32,4 @@
 * Ensure that point radius is taken into account when splitting/inserting
 * Refactor insertion so that non-leaf nodes contain points which intersect with more than one child octant (see above)
 * collectPoints should include own points as well as childrens'
+* Speed test for large octree (size of solar system)
