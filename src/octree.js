@@ -2,6 +2,7 @@
 
 let _      = require('lodash');
 let vektor = require('vektor');
+let clone  = require('clone');
 let Vec3   = vektor.vector;
 
 let OctreePoint = require('./octreePoint');
@@ -60,14 +61,29 @@ class Octree {
   }
 
   sphereFitsInsideOctant(point) {
-    return point.maxZ < this.maxZ && point.minZ > this.minZ &&
-      point.maxY < this.maxY && point.minY > this.minY &&
-      point.maxX < this.maxX && point.minX > this.minX;
+    return this.subsumesSphereInDimension(point, "x") &&
+      this.subsumesSphereInDimension(point, "y") &&
+      this.subsumesSphereInDimension(point, "z");
+  }
+
+  subsumesSphereInDimension(point, dimension) {
+    var upcasedDim = dimension.toUpperCase();
+    var pointDimMin = point["min" + upcasedDim];
+    var pointDimMax = point["max" + upcasedDim];
+
+    var octantDimMin = this["min" + upcasedDim];
+    var octantDimMax = this["max" + upcasedDim];
+
+    //console.log("Dimension: ", dimension);
+    //console.log("---------------");
+    //console.log("pointMin:", pointDimMin, " pointMax:", pointDimMax);
+    //console.log("octantMin:", octantDimMin, " octantMax:", octantDimMax);
+    return octantDimMin <= pointDimMin &&
+      octantDimMax >= pointDimMax;
   }
 
   intersectsSphereInDimension(point, dimension) {
     // consider extracting the three predicates here into their own functions for clarity
-    var d;
     var upcasedDim = dimension.toUpperCase();
     var pointDimMin = point["min" + upcasedDim];
     var pointDimMax = point["max" + upcasedDim];
@@ -96,7 +112,8 @@ class Octree {
             })
         .flatten()
         .reject(isNull)
-        .value();
+        .value()
+        .concat(this.points);
     } else {
       return this.points;
     };
@@ -216,6 +233,7 @@ class Octree {
   }
   
   _insert(point) {
+    //console.log("Inserting a point...")
     var t = this;
 
     if (this.isLeafNode()) {
@@ -230,17 +248,28 @@ class Octree {
         this.setPoint(point);
         return;
       } else if (this.needsToSplit()) { // END octant has no point data
+        //console.log("Splitting this octant");
         // We need to split this octant
         this.initializeChildren();
+        let pointsToDistribute = clone(this.points);
+        this.points = [];
 
+        //console.log("Redistributing Points");
         // Put the old point data into its new home
-        this.points.forEach((aPoint) => {
+        pointsToDistribute.forEach((aPoint) => {
+          //console.log("--------------------------------");
+          //console.log(aPoint);          
           // If the point fits totally inside its new, split octant, move it.
           // Otherwise it has to stay here
           var belongsInOctant = this.octantContainingPoint(aPoint);
-          if (belongsInOctant.sphereFitsInsideOctant(point)) {
+          //console.log("belongs in octant:", belongsInOctant);
+          //console.log("JUDGEMENT:", belongsInOctant.sphereFitsInsideOctant(aPoint));
+          if (belongsInOctant.sphereFitsInsideOctant(aPoint)) {
+            //console.log("Headed down a level!");
             this.octantContainingPoint(aPoint).insert(aPoint);
-            this._removePoint(aPoint);
+          } else { // Yay! We get to keep him!
+            //console.log("Stayin' put where he was before")
+            this.setPoint(aPoint);
           }
         });
 
@@ -248,7 +277,7 @@ class Octree {
         this.octantContainingPoint(point).insert(point);
       } // END split octant with existing point data
     } else {  // END is leaf node is true
-      // TODO
+
       // This isn't a leaf node
       // If the point we're inserting can't fit entirely into one child octant
       // keep it here

@@ -1,7 +1,5 @@
 # TODO
 
-* collectPoints should include own points as well as childrens'
-
 * Disallow insertion of points which would collide with other points (considering radius)
 
 * Query for points in sphere
@@ -33,3 +31,4 @@
 * Write method for whether child octant can contain sphere
 * Ensure that point radius is taken into account when splitting/inserting
 * Refactor insertion so that non-leaf nodes contain points which intersect with more than one child octant (see above)
+* collectPoints should include own points as well as childrens'
