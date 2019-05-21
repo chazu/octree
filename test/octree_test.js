@@ -541,7 +541,6 @@ describe('Octree', function() {
         halfDimension: 100
       });
 
-
       let points = [];
 
       _.times(10, () => {
